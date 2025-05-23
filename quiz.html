@@ -99,6 +99,7 @@
 <div class="container">
   <h1>How Nigerian Are You? Quiz</h1>
   <form id="quizForm"></form>
+<p id="warning" style="color: red; display: none;"></p>
   <button type="button" id="submitBtn" onclick="submitQuiz()">See Your Naija Score!</button>
   <button type="button" id="shareBtn" onclick="shareWhatsApp()">Share to WhatsApp Status</button>
 </div>
@@ -205,6 +206,37 @@ function shareWhatsApp() {
 
 
 loadQuestions();
+function submitQuiz() {
+  document.getElementById("warning").style.display = "none";
+  document.getElementById("warning").textContent = "";
+
+  let score = 0;
+  const totalQuestions = 15;
+
+  for (let i = 1; i <= totalQuestions; i++) {
+    const options = document.getElementsByName("q" + i);
+    let answered = false;
+
+    for (let option of options) {
+      if (option.checked) {
+        answered = true;
+        // Example scoring: You can customize this
+        if (option.value === "correct") {
+          score++;
+        }
+      }
+    }
+
+    if (!answered) {
+      document.getElementById("warning").textContent = "Oops! You missed question " + i + ". Please answer it before submitting.";
+      document.getElementById("warning").style.display = "block";
+      return;
+    }
+  }
+
+  // Show score or share options here
+  alert("Your Naija Score: " + score + "/" + totalQuestions);
+}
 </script>
 </body>
 </html>

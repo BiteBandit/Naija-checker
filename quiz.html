@@ -170,10 +170,7 @@ function submitQuiz() {
   for(let i = 0; i < questionPool.length; i++) {
     const radios = document.getElementsByName(`question${i}`);
     const checked = [...radios].find(r => r.checked);
-    if (!checked) {
-      alert(`Please answer question ${i + 1}`);
-      return;
-    }
+    
     totalScore += parseInt(checked.value);
   }
 

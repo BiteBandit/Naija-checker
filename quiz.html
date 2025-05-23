@@ -194,15 +194,18 @@ function submitQuiz() {
   shareText = `${resultMessage} (Your score: ${totalScore} / ${maxScore})`;
   shareBtn.style.display = "inline-block";
 }
-
 function shareWhatsApp() {
   if (!shareText) {
     alert("Please submit the quiz first.");
     return;
   }
-  const encoded = encodeURIComponent(shareText + " https://your-quiz-link.example");
+  // Add the clickable prompt line and your quiz URL
+  const quizURL = "https://bitebandit.github.io/Naija-checker/"; // Replace with your actual quiz URL
+  const fullMessage = `${shareText}\n\nClick here to check your Naija score!\n${quizURL}`;
+  const encoded = encodeURIComponent(fullMessage);
   window.open(`https://wa.me/?text=${encoded}`, '_blank');
 }
+
 
 loadQuestions();
 </script>

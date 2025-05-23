@@ -7,11 +7,9 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
   body {
-    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #ffda79, #f08a5d);
     color: #3e2723;
     text-align: center;
@@ -35,22 +33,10 @@
     font-size: 2.5rem;
     font-weight: 700;
   }
-  .question-block {
-    margin-bottom: 25px;
-    text-align: left;
-  }
-  .question {
-    font-weight: 700;
-    font-size: 1.15rem;
-    margin-bottom: 12px;
-  }
-  .options {
-    list-style: none;
-    padding: 0;
-  }
-  .options li {
-    margin-bottom: 12px;
-  }
+  .question-block { margin-bottom: 25px; text-align: left; }
+  .question { font-weight: 700; font-size: 1.15rem; margin-bottom: 12px; }
+  .options { list-style: none; padding: 0; }
+  .options li { margin-bottom: 12px; }
   label {
     cursor: pointer;
     font-size: 1rem;
@@ -73,29 +59,18 @@
     margin-top: 20px;
     transition: background-color 0.3s ease;
   }
-  button:hover {
-    background-color: #d84315;
-  }
+  button:hover { background-color: #d84315; }
   #shareBtn {
     display: none;
     background-color: #25d366;
     margin-top: 15px;
   }
-  #shareBtn:hover {
-    background-color: #1ebe57;
-  }
-  /* Responsive */
+  #shareBtn:hover { background-color: #1ebe57; }
+  #result { margin-top: 20px; font-size: 1.2rem; font-weight: bold; }
   @media(max-width: 600px) {
-    .container {
-      padding: 20px;
-    }
-    h1 {
-      font-size: 2rem;
-    }
-    button {
-      width: 100%;
-      margin: 20px 0 0 0;
-    }
+    .container { padding: 20px; }
+    h1 { font-size: 2rem; }
+    button { width: 100%; margin: 20px 0 0 0; }
   }
 </style>
 </head>
@@ -104,99 +79,88 @@
 <div class="container">
   <h1>How Nigerian Are You? Quiz</h1>
   <form id="quizForm"></form>
-  <button id="submitBtn" onclick="submitQuiz()">See Your Naija Score!</button>
-  <button id="shareBtn" onclick="shareWhatsApp()">Share to WhatsApp Status</button>
+  <button type="button" id="submitBtn" onclick="submitQuiz()">See Your Naija Score!</button>
+  <div id="result"></div>
+  <button type="button" id="shareBtn" onclick="shareWhatsApp()">Share to WhatsApp Status</button>
 </div>
 
 <script>
-  const questionPool = [
-    { q: "How do you reply to 'How far?'", options: [ { text: "I'm fine", points: 1 }, { text: "I dey", points: 3 }, { text: "Far ke?", points: 5 } ] },
-    { q: "Favorite meal?", options: [ { text: "Burger", points: 1 }, { text: "Jollof Rice", points: 5 }, { text: "Pizza", points: 2 } ] },
-    { q: "Someone shouts 'Wahala!' You:", options: [ { text: "Say 'Calm down'", points: 1 }, { text: "Run!", points: 3 }, { text: "Ask 'Who die?'", points: 5 } ] },
-    { q: "NEPA takes light. You:", options: [ { text: "Cry", points: 1 }, { text: "Shout 'Up NEPA!'", points: 5 }, { text: "Call generator guy", points: 3 } ] },
-    { q: "You see N100 on the floor. You:", options: [ { text: "Walk away", points: 1 }, { text: "Pick it sharp-sharp", points: 5 }, { text: "Take selfie with it", points: 3 } ] },
-    { q: "What’s your preferred greeting?", options: [ { text: "Hello", points: 1 }, { text: "How far?", points: 5 }, { text: "Wetin dey happen?", points: 3 } ] },
-    { q: "You hear 'Abeg', you:", options: [ { text: "Ignore", points: 1 }, { text: "Reply 'Abeg who?'", points: 3 }, { text: "Say 'Abeg no wahala'", points: 5 } ] },
-    { q: "If you enter traffic, you:", options: [ { text: "Get annoyed", points: 1 }, { text: "Play music and chill", points: 3 }, { text: "Try to hustle inside traffic", points: 5 } ] },
-    { q: "Favorite music style?", options: [ { text: "Pop", points: 1 }, { text: "Afrobeats", points: 5 }, { text: "Hip Hop", points: 3 } ] },
-    { q: "Your reaction when someone says 'No wahala':", options: [ { text: "Confused", points: 1 }, { text: "Smile and say 'True'", points: 5 }, { text: "Ask what wahala means", points: 3 } ] },
-    { q: "You get 'pepper dem' on your food. You:", options: [ { text: "Remove it", points: 1 }, { text: "Eat small small", points: 3 }, { text: "Finish am sharp sharp", points: 5 } ] },
-    { q: "How do you address elders?", options: [ { text: "By first name", points: 1 }, { text: "Uncle/Aunty", points: 5 }, { text: "Sir/Ma", points: 3 } ] },
-    { q: "You hear 'Omo', you:", options: [ { text: "Think it’s a name", points: 1 }, { text: "Use it for friends", points: 5 }, { text: "Ignore it", points: 3 } ] },
-    { q: "When invited to party, you:", options: [ { text: "Say maybe", points: 1 }, { text: "Show up with style", points: 5 }, { text: "Bring gift and food", points: 3 } ] },
-    { q: "You hear 'E choke', you:", options: [ { text: "Say 'What?'", points: 1 }, { text: "Laugh along", points: 5 }, { text: "Ask for explanation", points: 3 } ] },
-    { q: "How do you pay for things?", options: [ { text: "Cash only", points: 5 }, { text: "Card only", points: 1 }, { text: "Mobile money", points: 3 } ] }
-  ];
+const questionPool = [
+  { q: "How do you reply to 'How far?'", options: [ { text: "I'm fine", points: 1 }, { text: "I dey", points: 3 }, { text: "Far ke?", points: 5 } ] },
+  { q: "Favorite meal?", options: [ { text: "Burger", points: 1 }, { text: "Jollof Rice", points: 5 }, { text: "Pizza", points: 2 } ] },
+  { q: "Someone shouts 'Wahala!' You:", options: [ { text: "Say 'Calm down'", points: 1 }, { text: "Run!", points: 3 }, { text: "Ask 'Who die?'", points: 5 } ] },
+  { q: "NEPA takes light. You:", options: [ { text: "Cry", points: 1 }, { text: "Shout 'Up NEPA!'", points: 5 }, { text: "Call generator guy", points: 3 } ] },
+  { q: "You see N100 on the floor. You:", options: [ { text: "Walk away", points: 1 }, { text: "Pick it sharp-sharp", points: 5 }, { text: "Take selfie with it", points: 3 } ] },
+  { q: "What’s your preferred greeting?", options: [ { text: "Hello", points: 1 }, { text: "How far?", points: 5 }, { text: "Wetin dey happen?", points: 3 } ] },
+  { q: "You hear 'Abeg', you:", options: [ { text: "Ignore", points: 1 }, { text: "Reply 'Abeg who?'", points: 3 }, { text: "Say 'Abeg no wahala'", points: 5 } ] },
+  { q: "If you enter traffic, you:", options: [ { text: "Get annoyed", points: 1 }, { text: "Play music and chill", points: 3 }, { text: "Try to hustle inside traffic", points: 5 } ] },
+  { q: "Favorite music style?", options: [ { text: "Pop", points: 1 }, { text: "Afrobeats", points: 5 }, { text: "Hip Hop", points: 3 } ] },
+  { q: "Your reaction when someone says 'No wahala':", options: [ { text: "Confused", points: 1 }, { text: "Smile and say 'True'", points: 5 }, { text: "Ask what wahala means", points: 3 } ] },
+  { q: "You get 'pepper dem' on your food. You:", options: [ { text: "Remove it", points: 1 }, { text: "Eat small small", points: 3 }, { text: "Finish am sharp sharp", points: 5 } ] },
+  { q: "How do you address elders?", options: [ { text: "By first name", points: 1 }, { text: "Uncle/Aunty", points: 5 }, { text: "Sir/Ma", points: 3 } ] },
+  { q: "You hear 'Omo', you:", options: [ { text: "Think it’s a name", points: 1 }, { text: "Use it for friends", points: 5 }, { text: "Ignore it", points: 3 } ] },
+  { q: "When invited to party, you:", options: [ { text: "Say maybe", points: 1 }, { text: "Show up with style", points: 5 }, { text: "Bring gift and food", points: 3 } ] },
+  { q: "You hear 'E choke', you:", options: [ { text: "Say 'What?'", points: 1 }, { text: "Laugh along", points: 5 }, { text: "Ask for explanation", points: 3 } ] },
+  { q: "How do you pay for things?", options: [ { text: "Cash only", points: 5 }, { text: "Card only", points: 1 }, { text: "Mobile money", points: 3 } ] }
+];
 
-  const quizForm = document.getElementById("quizForm");
-  const submitBtn = document.getElementById("submitBtn");
-  const shareBtn = document.getElementById("shareBtn");
-  let totalScore = 0;
+const quizForm = document.getElementById("quizForm");
+const shareBtn = document.getElementById("shareBtn");
+const resultDiv = document.getElementById("result");
+let shareText = "";
 
-  function loadQuestions() {
-    questionPool.forEach((q, idx) => {
-      const questionBlock = document.createElement("div");
-      questionBlock.classList.add("question-block");
+function loadQuestions() {
+  questionPool.forEach((q, idx) => {
+    const questionBlock = document.createElement("div");
+    questionBlock.classList.add("question-block");
 
-      const questionTitle = document.createElement("div");
-      questionTitle.classList.add("question");
-      questionTitle.textContent = `${idx + 1}. ${q.q}`;
-      questionBlock.appendChild(questionTitle);
+    const questionTitle = document.createElement("div");
+    questionTitle.classList.add("question");
+    questionTitle.textContent = `${idx + 1}. ${q.q}`;
+    questionBlock.appendChild(questionTitle);
 
-      const optionsList = document.createElement("ul");
-      optionsList.classList.add("options");
+    const optionsList = document.createElement("ul");
+    optionsList.classList.add("options");
 
-      q.options.forEach((opt, i) => {
-        const optionItem = document.createElement("li");
+    q.options.forEach((opt, i) => {
+      const optionItem = document.createElement("li");
 
-        const optionInput = document.createElement("input");
-        optionInput.type = "radio";
-        optionInput.name = `question${idx}`;
-        optionInput.id = `q${idx}o${i}`;
-        optionInput.value = opt.points;
+      const optionInput = document.createElement("input");
+      optionInput.type = "radio";
+      optionInput.name = `question${idx}`;
+      optionInput.id = `q${idx}o${i}`;
+      optionInput.value = opt.points;
 
-        const optionLabel = document.createElement("label");
-        optionLabel.htmlFor = optionInput.id;
-        optionLabel.textContent = opt.text;
+      const optionLabel = document.createElement("label");
+      optionLabel.htmlFor = optionInput.id;
+      optionLabel.textContent = opt.text;
 
-        optionItem.appendChild(optionInput);
-        optionItem.appendChild(optionLabel);
-        optionsList.appendChild(optionItem);
-      });
-
-      questionBlock.appendChild(optionsList);
-      quizForm.appendChild(questionBlock);
+      optionItem.appendChild(optionInput);
+      optionItem.appendChild(optionLabel);
+      optionsList.appendChild(optionItem);
     });
-  }
 
-let shareText = ""; // store share message for WhatsApp
+    questionBlock.appendChild(optionsList);
+    quizForm.appendChild(questionBlock);
+  });
+}
 
 function submitQuiz() {
-  // Check all questions answered
-  for(let i=0; i < questionPool.length; i++) {
+  let totalScore = 0;
+  for(let i = 0; i < questionPool.length; i++) {
     const radios = document.getElementsByName(`question${i}`);
-    if (![...radios].some(r => r.checked)) {
+    const checked = [...radios].find(r => r.checked);
+    if (!checked) {
       alert(`Please answer question ${i + 1}`);
       return;
     }
-  }
-
-  // Calculate total score
-  totalScore = 0;
-  for(let i=0; i < questionPool.length; i++) {
-    const radios = document.getElementsByName(`question${i}`);
-    for (const r of radios) {
-      if (r.checked) {
-        totalScore += parseInt(r.value);
-        break;
-      }
-    }
+    totalScore += parseInt(checked.value);
   }
 
   const maxScore = questionPool.length * 5;
   const percentage = (totalScore / maxScore) * 100;
-
   let resultMessage = "";
+
   if (percentage >= 80) {
     resultMessage = "Wow! You’re 100% Naija! You speak, eat, and live Nigerian culture like a true local.";
   } else if (percentage >= 60) {
@@ -207,34 +171,18 @@ function submitQuiz() {
     resultMessage = "Hmm, you might need to brush up on your Nigerian culture!";
   }
 
-  // Prepare the share text
-  shareText = `I just took the "How Nigerian Are You?" quiz!\nMy Naija score is ${totalScore} out of ${maxScore} (${percentage.toFixed(1)}%).\n${resultMessage}\n\nTry it yourself here: https://yourwebsite.com`;
+  resultDiv.textContent = `${resultMessage} (Your score: ${totalScore} / ${maxScore})`;
+  shareText = `I scored ${totalScore}/${maxScore} on the "How Nigerian Are You?" quiz! Try yours now and share your result too!`;
 
-  // Hide submit button and show share button
-  submitBtn.style.display = "none";
   shareBtn.style.display = "inline-block";
-
-  // Optionally alert user the result
-  alert(resultMessage + `\nYour Naija score: ${totalScore} out of ${maxScore} (${percentage.toFixed(1)}%)`);
 }
 
 function shareWhatsApp() {
-  if (!shareText) {
-    alert("Please submit the quiz first!");
-    return;
-  }
-
-  const encodedMsg = encodeURIComponent(shareText);
-  const whatsappURL = `https://wa.me/?text=${encodedMsg}`;
-  window.open(whatsappURL, "_blank");
+  const encoded = encodeURIComponent(shareText + " https://your-quiz-link.example");
+  window.open(`https://wa.me/?text=${encoded}`, '_blank');
 }
 
-  // All your functions...
-
-  // Call this at the end to load the quiz when the page opens
-  window.onload = loadQuestions;
-
+loadQuestions();
 </script>
-
 </body>
 </html>

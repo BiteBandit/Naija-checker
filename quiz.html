@@ -200,7 +200,7 @@ function shareWhatsApp() {
     return;
   }
   // Add the clickable prompt line and your quiz URL
-  const quizURL = "https://bitebandit.github.io/Naija-checker/"; // Replace with your actual quiz URL
+  const quizURL = "https://naija-checker.vercel.app/"; // Replace with your actual quiz URL
   const fullMessage = `${shareText}\n\nClick here to check your Naija score!\n${quizURL}`;
   const encoded = encodeURIComponent(fullMessage);
   window.open(`https://wa.me/?text=${encoded}`, '_blank');

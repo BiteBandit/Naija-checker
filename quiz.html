@@ -228,6 +228,12 @@ function shareWhatsApp() {
   const whatsappURL = `https://wa.me/?text=${encodedMsg}`;
   window.open(whatsappURL, "_blank");
 }
+
+  // All your functions...
+
+  // Call this at the end to load the quiz when the page opens
+  window.onload = loadQuestions;
+
 </script>
 
 </body>

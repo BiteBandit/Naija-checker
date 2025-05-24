@@ -6,7 +6,7 @@
 <title>How Nigerian Are You? Quiz</title>
 
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1TKVJV0VH1"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -91,12 +91,6 @@
   #shareBtn:hover {
     background-color: #1ebe57;
   }
-  #result {
-    margin-top: 20px;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #4a148c;
-  }
   #warning {
     color: red;
     margin-top: 10px;
@@ -122,7 +116,6 @@
     <h1>How Nigerian Are You? Quiz</h1>
     <form id="quizForm"></form>
     <p id="warning"></p>
-    <p id="result"></p>
     <button type="button" id="submitBtn" onclick="submitQuiz()">See Your Naija Score!</button>
     <button type="button" id="shareBtn" onclick="shareWhatsApp()">Share to WhatsApp Status</button>
   </div>
@@ -149,8 +142,10 @@ const questionPool = [
 
 const quizForm = document.getElementById("quizForm");
 const warning = document.getElementById("warning");
-const result = document.getElementById("result");
+const submitBtn = document.getElementById("submitBtn");
 const shareBtn = document.getElementById("shareBtn");
+
+let totalPoints = 0;
 let shareText = "";
 
 function loadQuestions() {
@@ -181,6 +176,7 @@ function loadQuestions() {
 
       optionItem.appendChild(optionInput);
       optionItem.appendChild(optionLabel);
+
       optionsList.appendChild(optionItem);
     });
 
@@ -189,53 +185,72 @@ function loadQuestions() {
   });
 }
 
+function getRandomWriteUp(score) {
+  // Write-ups by score range
+  const writeUps = {
+    low: [
+      "Hmm... You might be new to Naija vibes, but there's always room to grow!",
+      "You still need to catch some Naija spirit, but keep trying!",
+      "Not quite Naija yet, but you're getting there!"
+    ],
+    mid: [
+      "You got some solid Naija swag! Keep it up!",
+      "Definitely Naija enough to enjoy the jollof and the hustle!",
+      "You know your way around the Naija culture pretty well!"
+    ],
+    high: [
+      "You are pure Naija through and through! No shaking you!",
+      "Certified Naija! You speak the language of the people!",
+      "Naija born, Naija bred, and Naija led! Well done!"
+    ]
+  };
+
+  if(score <= 35) {
+    return writeUps.low[Math.floor(Math.random() * writeUps.low.length)];
+  } else if(score <= 60) {
+    return writeUps.mid[Math.floor(Math.random() * writeUps.mid.length)];
+  } else {
+    return writeUps.high[Math.floor(Math.random() * writeUps.high.length)];
+  }
+}
+
 function submitQuiz() {
   warning.style.display = "none";
-  warning.textContent = "";
-  result.textContent = "";
-  shareBtn.style.display = "none";
+  totalPoints = 0;
+  let allAnswered = true;
 
-  let totalPoints = 0;
-
-  for (let i = 0; i < questionPool.length; i++) {
-    const options = document.getElementsByName(`question${i}`);
-    let answered = false;
-    for (const opt of options) {
-      if (opt.checked) {
-        totalPoints += parseInt(opt.value, 10);
-        answered = true;
-        break;
-      }
+  for(let i = 0; i < questionPool.length; i++) {
+    const selected = document.querySelector(`input[name="question${i}"]:checked`);
+    if(!selected) {
+      allAnswered = false;
+      break;
     }
-    if (!answered) {
-      warning.style.display = "block";
-      warning.textContent = `Please answer question ${i + 1}.`;
-      return;
-    }
+    totalPoints += parseInt(selected.value);
   }
 
-  let level = "";
-  if (totalPoints <= 30) level = "You are a cool Naija novice!";
-  else if (totalPoints <= 55) level = "You’re pretty Naija-savvy!";
-  else if (totalPoints <= 75) level = "You’re a true Naija champion!";
-  else level = "You are 100% Naija – certified OG!";
+  if(!allAnswered) {
+    warning.textContent = "Please answer all questions before submitting.";
+    warning.style.display = "block";
+    return;
+  }
 
-  result.textContent = `Your Naija Score: ${totalPoints} – ${level}`;
-  
-  shareText = `My Naija Score is ${totalPoints}! ${level} Try the quiz here: ${window.location.href}`;
-  
+  // Prepare share text for WhatsApp (includes random write-up + score + link)
+  const writeUp = getRandomWriteUp(totalPoints);
+  shareText = `${writeUp}\nYour Naija Score: ${totalPoints} / ${questionPool.length * 5}\nTry the quiz yourself: https://naija-checker.vercel.app/`;
+
+  submitBtn.style.display = "none";
   shareBtn.style.display = "inline-block";
+
+  // Optional: Show a brief message to user about sharing
+  alert("Your score is ready! Click the green button to share your result on WhatsApp.");
 }
 
 function shareWhatsApp() {
-  const encodedText = encodeURIComponent(shareText);
-  // WhatsApp Status URL format
-  const whatsappUrl = `https://wa.me/?text=${encodedText}`;
-  window.open(whatsappUrl, '_blank');
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+  window.open(whatsappUrl, "_blank");
 }
 
-// Load questions on page load
-loadQuestions();
+window.onload = loadQuestions;
 </script>
 </body>
 </html>

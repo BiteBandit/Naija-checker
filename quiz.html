@@ -157,7 +157,7 @@ function shuffleArray(array) {
 function loadQuestions() {
   const selectedQuestions = [...questionPool]; // clone array
   shuffleArray(selectedQuestions); // randomize order
-  const questionsToShow = selectedQuestions.slice(0, 10); // show only 10 random questions
+  const questionsToShow = selectedQuestions.slice(0, 16); // show only 10 random questions
 
   questionsToShow.forEach((q, idx) => {  
     const questionBlock = document.createElement("div");

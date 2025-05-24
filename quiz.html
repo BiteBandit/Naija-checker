@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1TKVJV0VH1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How Nigerian Are You? Quiz</title>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -11,8 +14,7 @@
 
   gtag('config', 'G-1TKVJV0VH1');
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>How Nigerian Are You? Quiz</title>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
   * { box-sizing: border-box; }
@@ -85,10 +87,21 @@
   #shareBtn {
     display: none;
     background-color: #25d366;
-    margin-top: 15px;
   }
   #shareBtn:hover {
     background-color: #1ebe57;
+  }
+  #result {
+    margin-top: 20px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #4a148c;
+  }
+  #warning {
+    color: red;
+    margin-top: 10px;
+    font-weight: 600;
+    display: none;
   }
   @media(max-width: 600px) {
     .container {
@@ -105,13 +118,14 @@
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>How Nigerian Are You? Quiz</h1>
-  <form id="quizForm"></form>
-<p id="warning" style="color: red; display: none;"></p>
-  <button type="button" id="submitBtn" onclick="submitQuiz()">See Your Naija Score!</button>
-  <button type="button" id="shareBtn" onclick="shareWhatsApp()">Share to WhatsApp Status</button>
-</div>
+  <div class="container">
+    <h1>How Nigerian Are You? Quiz</h1>
+    <form id="quizForm"></form>
+    <p id="warning"></p>
+    <p id="result"></p>
+    <button type="button" id="submitBtn" onclick="submitQuiz()">See Your Naija Score!</button>
+    <button type="button" id="shareBtn" onclick="shareWhatsApp()">Share to WhatsApp Status</button>
+  </div>
 
 <script>
 const questionPool = [
@@ -134,13 +148,13 @@ const questionPool = [
 ];
 
 const quizForm = document.getElementById("quizForm");
+const warning = document.getElementById("warning");
+const result = document.getElementById("result");
 const shareBtn = document.getElementById("shareBtn");
-
 let shareText = "";
 
 function loadQuestions() {
-  const shuffledQuestions = questionPool.sort(() => 0.5 - Math.random());
-  shuffledQuestions.forEach((q, idx) => {
+  questionPool.forEach((q, idx) => {
     const questionBlock = document.createElement("div");
     questionBlock.classList.add("question-block");
 
@@ -176,76 +190,52 @@ function loadQuestions() {
 }
 
 function submitQuiz() {
-  let totalScore = 0;
-  for(let i = 0; i < questionPool.length; i++) {
-    const radios = document.getElementsByName(`question${i}`);
-    const checked = [...radios].find(r => r.checked);
-    
-    totalScore += parseInt(checked.value);
-  }
+  warning.style.display = "none";
+  warning.textContent = "";
+  result.textContent = "";
+  shareBtn.style.display = "none";
 
-  const maxScore = questionPool.length * 5;
-  const percentage = (totalScore / maxScore) * 100;
-  let resultMessage = "";
+  let totalPoints = 0;
 
-  if (percentage >= 80) {
-    resultMessage = "Wow! You’re 100% Naija! You speak, eat, and live Nigerian culture like a true local.";
-  } else if (percentage >= 60) {
-    resultMessage = "You’re pretty Nigerian! You know your way around Naija vibes and culture.";
-  } else if (percentage >= 40) {
-    resultMessage = "You’re somewhat Nigerian, but there’s room to catch more Naija spirit.";
-  } else {
-    resultMessage = "Hmm, you might need to brush up on your Nigerian culture!";
-  }
-
-  shareText = `${resultMessage} (Your score: ${totalScore} / ${maxScore})`;
-  shareBtn.style.display = "inline-block";
-}
-function shareWhatsApp() {
-  if (!shareText) {
-    alert("Please submit the quiz first.");
-    return;
-  }
-  // Add the clickable prompt line and your quiz URL
-  const quizURL = "https://naija-checker.vercel.app/"; // Replace with your actual quiz URL
-  const fullMessage = `${shareText}\n\nClick here to check your Naija score!\n${quizURL}`;
-  const encoded = encodeURIComponent(fullMessage);
-  window.open(`https://wa.me/?text=${encoded}`, '_blank');
-}
-
-
-loadQuestions();
-function submitQuiz() {
-  document.getElementById("warning").style.display = "none";
-  document.getElementById("warning").textContent = "";
-
-  let score = 0;
-  const totalQuestions = 15;
-
-  for (let i = 1; i <= totalQuestions; i++) {
-    const options = document.getElementsByName("q" + i);
+  for (let i = 0; i < questionPool.length; i++) {
+    const options = document.getElementsByName(`question${i}`);
     let answered = false;
-
-    for (let option of options) {
-      if (option.checked) {
+    for (const opt of options) {
+      if (opt.checked) {
+        totalPoints += parseInt(opt.value, 10);
         answered = true;
-        // Example scoring: You can customize this
-        if (option.value === "correct") {
-          score++;
-        }
+        break;
       }
     }
-
     if (!answered) {
-      document.getElementById("warning").textContent = "Oops! You missed a question . Please answer it before submitting.";
-      document.getElementById("warning").style.display = "block";
+      warning.style.display = "block";
+      warning.textContent = `Please answer question ${i + 1}.`;
       return;
     }
   }
 
-  // Show score or share options here
-  alert("Your Naija Score: " + score + "/" + totalQuestions);
+  let level = "";
+  if (totalPoints <= 30) level = "You are a cool Naija novice!";
+  else if (totalPoints <= 55) level = "You’re pretty Naija-savvy!";
+  else if (totalPoints <= 75) level = "You’re a true Naija champion!";
+  else level = "You are 100% Naija – certified OG!";
+
+  result.textContent = `Your Naija Score: ${totalPoints} – ${level}`;
+  
+  shareText = `My Naija Score is ${totalPoints}! ${level} Try the quiz here: ${window.location.href}`;
+  
+  shareBtn.style.display = "inline-block";
 }
+
+function shareWhatsApp() {
+  const encodedText = encodeURIComponent(shareText);
+  // WhatsApp Status URL format
+  const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+  window.open(whatsappUrl, '_blank');
+}
+
+// Load questions on page load
+loadQuestions();
 </script>
 </body>
 </html>

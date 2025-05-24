@@ -148,6 +148,12 @@ const shareBtn = document.getElementById("shareBtn");
 let totalPoints = 0;
 let shareText = "";
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 function loadQuestions() {
   questionPool.forEach((q, idx) => {
     const questionBlock = document.createElement("div");

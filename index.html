@@ -470,6 +470,31 @@ await setDoc(userDocRef, {
   createdAt: serverTimestamp(),
 });
 
+// 5. If referredBy exists, update the referrer document atomically
+// After updating referrer docs atomically:
+if (referralCodeFromUrl) {
+const referrerQuery = query(
+collection(db, "users"),
+where("referralCode", "==", referralCodeFromUrl)
+);
+const referrerSnapshot = await getDocs(referrerQuery);
+
+if (!referrerSnapshot.empty) {
+const referrerDoc = referrerSnapshot.docs[0];
+
+await updateDoc(referrerDoc.ref, {  
+  referrals: increment(1),  
+  balance: increment(200)  
+});
+
+} else {
+// Optionally handle invalid referral code here
+console.warn("Referral code not found:", referralCodeFromUrl);
+}
+} // <---- Make sure to close this block
+
+
+
     successMsg.textContent = "✅ Account created successfully! A verification email has been sent. Redirecting...";
 
     registerForm.reset();
@@ -585,49 +610,6 @@ googleSignUpBtn.addEventListener("click", async () => {
     googleSignUpBtn.textContent = "Sign Up with Google";
   }
 });
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    await user.reload(); // refresh latest user info
-    if (user.emailVerified) {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      if (!userDocSnap.exists()) return;
-
-      const userData = userDocSnap.data();
-      const referralCodeFromUrl = userData.referredBy;
-      const bonusAlreadyGiven = userData.referralBonusGiven || false;
-
-      if (referralCodeFromUrl && !bonusAlreadyGiven) {
-        const referrerQuery = query(
-          collection(db, "users"),
-          where("referralCode", "==", referralCodeFromUrl)
-        );
-        const referrerSnapshot = await getDocs(referrerQuery);
-
-        if (!referrerSnapshot.empty) {
-          const referrerDoc = referrerSnapshot.docs[0];
-
-          // Award referrer
-          await updateDoc(referrerDoc.ref, {
-            referrals: increment(1),
-            balance: increment(200)
-          });
-
-          // Mark bonus as given to avoid repeats
-          await updateDoc(userDocRef, {
-            referralBonusGiven: true
-          });
-
-          console.log("Referral bonus awarded and marked as given.");
-        } else {
-          console.warn("Referral code not found:", referralCodeFromUrl);
-        }
-      }
-    }
-  }
-});
-
 </script>
 </body>
 </html>

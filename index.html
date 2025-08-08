@@ -327,9 +327,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 1. Get referral code from URL query param (run this near top of your script)
 const urlParams = new URLSearchParams(window.location.search);
-const referralCodeFromUrl = urlParams.get("referral") || null;
+const referralCodeFromUrl = urlParams.get("ref") || null;
+
 
 const registerForm = document.getElementById("registerForm");
 const usernameInput = document.getElementById("username");
@@ -454,7 +454,7 @@ registerForm.addEventListener("submit", async (e) => {
 // Always generate a truly unique referral code
 const userReferralCode = await generateUniqueReferralCode(8);
 
-// Reference to the user document
+// Reference to the user document (document ID is user.uid)
 const userDocRef = doc(db, "users", user.uid);
 
 // Save user data
@@ -464,36 +464,34 @@ await setDoc(userDocRef, {
   phone: phoneInput.value.trim(),
   role: roleInput.value,
   referralCode: userReferralCode,
-  referredBy: referralCodeFromUrl,
+  referredBy: referralCodeFromUrl,  // Store the referrer custom code
   referrals: 0,
   balance: 0,
   createdAt: serverTimestamp(),
 });
 
-// 5. If referredBy exists, update the referrer document atomically
-// After updating referrer docs atomically:
+// If referredBy exists, update the referrer document atomically
 if (referralCodeFromUrl) {
-const referrerQuery = query(
-collection(db, "users"),
-where("referralCode", "==", referralCodeFromUrl)
-);
-const referrerSnapshot = await getDocs(referrerQuery);
+  // Query the users collection for a document with referralCode == referralCodeFromUrl
+  const referrerQuery = query(
+    collection(db, "users"),
+    where("referralCode", "==", referralCodeFromUrl)
+  );
+  const referrerSnapshot = await getDocs(referrerQuery);
 
-if (!referrerSnapshot.empty) {
-const referrerDoc = referrerSnapshot.docs[0];
+  if (!referrerSnapshot.empty) {
+    const referrerDoc = referrerSnapshot.docs[0];
 
-await updateDoc(referrerDoc.ref, {  
-  referrals: increment(1),  
-  balance: increment(200)  
-});
-
-} else {
-// Optionally handle invalid referral code here
-console.warn("Referral code not found:", referralCodeFromUrl);
+    // Update the referrer’s data with +1 referral and +200 balance
+    await updateDoc(referrerDoc.ref, {
+      referrals: increment(1),
+      balance: increment(200),
+    });
+  } else {
+    // Handle invalid referral code here (optional)
+    console.warn("Referral code not found:", referralCodeFromUrl);
+  }
 }
-} // <---- Make sure to close this block
-
-
 
     successMsg.textContent = "✅ Account created successfully! A verification email has been sent. Redirecting...";
 
